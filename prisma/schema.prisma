@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id    String     @default(uuid()) @id
+  userName String
+  fullName String
+  email String  @unique
+  password String
+  point   Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  books Book[] // one customer can have multple books
+}
+
+model Book {
+  id        String   @id @unique @default(uuid())
+  title     String   @unique
+  writer  String
+  coverImage String  @default("https://images-na.ssl-images-amazon.com/images/I/51Ga5GuElyL._AC_SX184_.jpg")
+  price   Int
+  tag Tag
+  customer    Customer?    @relation(fields: [customerId], references: [id]) // each book is associated with one customer.
+  customerId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+enum Tag {
+  fiction
+  nonFiction
+  science
+  essay
+}
